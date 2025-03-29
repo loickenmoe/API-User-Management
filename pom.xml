@@ -27,6 +27,8 @@
 		<url/>
 	</scm>
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>22</java.version>
 		<jjwt.version>0.11.5</jjwt.version>
 	</properties>
@@ -98,6 +100,20 @@
 
 	<build>
 		<plugins>
+			<!-- Configuration du plugin maven-resources -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.3.1</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<!-- Désactiver le filtrage pour les fichiers properties -->
+					<nonFilteredFileExtensions>
+						<nonFilteredFileExtension>properties</nonFilteredFileExtension>
+					</nonFilteredFileExtensions>
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -123,6 +139,28 @@
 				</configuration>
 			</plugin>
 		</plugins>
+
+		<!-- Ajout de la configuration d'encodage globale -->
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*.properties</include>
+				</includes>
+				<excludes>
+					<exclude>**/application.properties</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+				<includes>
+					<include>**/application.properties</include>
+				</includes>
+			</resource>
+		</resources>
+
 	</build>
 
 </project>

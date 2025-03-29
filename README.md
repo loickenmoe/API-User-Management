@@ -44,42 +44,57 @@ http://localhost:9006/swagger-ui/index.html
 
 ##  Exemples de requêtes :
 
-    -Créer un nouvelle article :
-    POST http://localhost:9010/articles
+    -Étape 1: Enregistrement d'un utilisateur :
+    POST http://localhost:9006/auth/register
     Content-Type: application/json
     {
-    "title": "Introduction à Spring Boot",
-    "content": "Spring Boot facilite le développement d'applications web Java."
+     "name": "Jean Dupont",
+     "email": "jean.dupont@example.com",
+     "password": "MotDePasse123!"
     }
 
     Reponse attendue:
     {
-    "id": 5,
-    "title": "Introduction à Spring Boot",
-    "content": "Spring Boot facilite le développement d'applications web Java.",
-    "publishedAt": "2025-03-27T11:05:49.7210984",
-    "comments": []
+      "id": 1,
+      "name": "Jean Dupont",
+      "email": "jean.dupont@example.com"
     }
     
-    -Lister tous les articles :
-    GET http://localhost:9010/articles
+    -Étape 2: Connexion (Authentification JWT) :
+      POST http://localhost:9006/auth/login
+      Content-Type: application/json
+     {
+      "email": "jean.dupont@example.com",
+      "password": "MotDePasse123!"
+     }
+
     Reponse attendue:
-    [
-    {"id":1,"title":"Mon premier article","content":"Ceci est le contenu de l'article.","publishedAt":"2025-03-26T15:38:14.360567","comments":[]},
-    {"id":2,"title":"Mon premier article","content":"Ceci est le contenu de l'article.","publishedAt":"2025-03-26T15:42:41.47467","comments":[]},
-    {"id":4,"title":"string","content":"string","publishedAt":"2025-03-27T10:07:13.825976","comments":[]},
-    {"id":5,"title":"Introduction à Spring Boot","content":"Spring Boot facilite le développement d'applications web Java.","publishedAt":"2025-03-27T11:05:49.721098","comments":[]}
-    ]
-    
-    -Supprimer un articles :
-    DELETE http://localhost:9010/articles/2
-    
-    si on consulte la liste de tous les articles à nouveau, on obtient:
-    [
-    {"id":1,"title":"Mon premier article","content":"Ceci est le contenu de l'article.","publishedAt":"2025-03-26T15:38:14.360567","comments":[]},
-    {"id":4,"title":"string","content":"string","publishedAt":"2025-03-27T10:07:13.825976","comments":[]},
-    {"id":5,"title":"Introduction à Spring Boot","content":"Spring Boot facilite le développement d'applications web Java.","publishedAt":"2025-03-27T11:05:49.721098","comments":[]}
-    ]
+    {
+       "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqZWFuLmR1cG9udEBleGFtcGxlLmNvbSIsImlhdCI6MTc0MzI1MDk4MSwiZXhwIjoxNzQzMzM3MzgxfQ.bEfoBOXJsvJH-A4-_5XkaW-jqOUIe3GFS1cx_nwg3i0",
+       "tokenType": "Bearer"
+    }
+
+    -Étape 3: Accès protégé avec token (remplacer <VOTRE_TOKEN_ICI>)
+     POST http://localhost:9006/users
+     Authorization: Bearer <VOTRE_TOKEN_ICI>
+
+
+    -Étape 4: Mise à jour de l'utilisateur (remplacer <USER_ID> et <VOTRE_TOKEN_ICI>)
+     PUT http://localhost:9006/users/<USER_ID>
+     Content-Type: application/json
+     Authorization: Bearer <VOTRE_TOKEN_ICI>
+     {
+      "name": "Updated User",
+      "email": "updated@example.com"
+      }
+
+    -Étape 5: Suppression de l'utilisateur (remplacer <USER_ID> et <VOTRE_TOKEN_ICI>)
+     DELETE http://localhost:9006/users/<USER_ID>
+     Authorization: Bearer <VOTRE_TOKEN_ICI> 
+
+    -Étape 6: Vérification de la suppression (doit retourner 404)
+     GET http://localhost:9006/users/<USER_ID>
+     Authorization: Bearer <VOTRE_TOKEN_ICI> 
 
 
   

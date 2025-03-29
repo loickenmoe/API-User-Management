@@ -23,7 +23,7 @@ public class JwtTokenProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
-    @Value("${app.jwt.secret:JWTSuperSecretKey}")
+    @Value("${app.jwt.secret:jwt.secret = Aq3t6w9z$C&F)J@NcRfUjXn2r5u8x/A?}")
     private String jwtSecret;
 
     @Value("${app.jwt.expiration-ms:86400000}") // Default: 24 hours
@@ -73,18 +73,22 @@ public class JwtTokenProvider {
      */
     public boolean validateToken(String authToken) {
         try {
-            Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(authToken);
+            Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(authToken);
+            logger.debug("JWT validé avec succès");
             return true;
         } catch (SignatureException ex) {
-            logger.error("Invalid JWT signature");
+            logger.error("Signature JWT invalide. Secret utilisé: {}", jwtSecret);
         } catch (MalformedJwtException ex) {
-            logger.error("Invalid JWT token");
+            logger.error("Token JWT malformé: {}", authToken);
         } catch (ExpiredJwtException ex) {
-            logger.error("Expired JWT token");
+            logger.error("Token JWT expiré. Date d'expiration: {}", ex.getClaims().getExpiration());
         } catch (UnsupportedJwtException ex) {
-            logger.error("Unsupported JWT token");
+            logger.error("Token JWT non supporté: {}", authToken);
         } catch (IllegalArgumentException ex) {
-            logger.error("JWT claims string is empty");
+            logger.error("JWT claims string est vide");
         }
         return false;
     }
