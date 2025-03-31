@@ -4,10 +4,10 @@ Cette API permet de gérer des utilisateurs avec authentification JWT, incluant 
 
 ## Prérequis
 
-- **Java 17, 21** (ou supérieur)
+- **Java 17, 21, 22** (ou supérieur)
 - **Maven** (pour la gestion des dépendances)
 - **PostgreSQL** (installé et configuré localement)
-- **Spring Boot 3.x**
+- **Spring Boot 3.3.9**
 
 ## Installation
 
@@ -26,8 +26,8 @@ Cette API permet de gérer des utilisateurs avec authentification JWT, incluant 
 
 
 ## Lancer l'application
-"mvn spring-boot:run"
--L'API sera disponible sur http://localhost:9006.
+ "mvn spring-boot:run"
+ -L'API sera disponible sur http://localhost:9006.
 
 ##   Utilisation de l'application :
     Endpoints

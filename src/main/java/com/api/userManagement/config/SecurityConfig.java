@@ -4,6 +4,10 @@ import com.api.userManagement.security.JwtAuthenticationEntryPoint;
 import com.api.userManagement.security.JwtAuthenticationFilter;
 import com.api.userManagement.security.JwtTokenProvider;
 import com.api.userManagement.service.UserDetailsServiceImpl;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,12 +47,6 @@ public class SecurityConfig {
         return new JwtAuthenticationFilter(tokenProvider, userDetailsService);
     }
 
-    // SUPPRIMEZ CE BEAN (déjà défini dans AppConfig)
-    // @Bean
-    // public PasswordEncoder passwordEncoder() {
-    //     return new BCryptPasswordEncoder();
-    // }
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
@@ -57,23 +55,26 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.disable())
-                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.disable()) // Désactive la gestion des CORS (ajuster si nécessaire)
+                .csrf(csrf -> csrf.disable()) // Désactive CSRF car on utilise JWT
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(unauthorizedHandler))
+                        .authenticationEntryPoint(unauthorizedHandler)) // Gestion des erreurs d'authentification
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT étant stateless, on ne stocke pas de session
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(
                                 "/api/auth/**",
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html"
+                                "/v3/api-docs/**", // Autorise Swagger API Docs
+                                "/swagger-ui/**", // Autorise Swagger UI
+                                "/swagger-ui.html",
+                                "/swagger-resources/**", // Autorise Swagger Resources
+                                "/webjars/**" // Autorise les fichiers statiques Swagger
                         ).permitAll()
-                        .requestMatchers("/api/users/**").authenticated() // Accès protégé
-                        .anyRequest().denyAll() // Bloque tout accès non explicitement autorisé
+                        .requestMatchers("/api/users/**").authenticated() // Accès protégé aux utilisateurs
+                        .anyRequest().denyAll() // Bloque toute autre requête non explicitement autorisée
                 );
 
+        // Ajoute le filtre JWT pour valider les tokens avec chaque requête
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -81,6 +82,28 @@ public class SecurityConfig {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder); // Utilisez l'instance injectée
+                .passwordEncoder(passwordEncoder); // Utilise l'encodeur de mot de passe injecté
     }
+
+    //swagger configuration
+    @Bean
+    public OpenAPI customOpenAPI() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("User Management API")
+                        .version("1.0")
+                        .description("API pour la gestion des utilisateurs avec authentification JWT"))
+                .addSecurityItem(new SecurityRequirement().addList("BearerAuth"))
+                .components(new io.swagger.v3.oas.models.Components()
+                        .addSecuritySchemes("BearerAuth", new SecurityScheme()
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")
+                                .in(SecurityScheme.In.HEADER)  // <-- Ajout pour s'assurer que le token est bien envoyé dans le header
+                                .name("Authorization")  // <-- Ajout du nom exact du header
+                                .in(SecurityScheme.In.HEADER)  // Assure l'envoi du token dans le header
+                        ));
+
+    }
+
 }

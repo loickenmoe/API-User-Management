@@ -3,7 +3,6 @@ package com.api.userManagement.controller;
 import com.api.userManagement.dto.AuthRequestDTO;
 import com.api.userManagement.dto.AuthResponseDTO;
 import com.api.userManagement.dto.UserDTO;
-import com.api.userManagement.entity.User;
 import com.api.userManagement.security.JwtTokenProvider;
 import com.api.userManagement.service.UserService;
 
@@ -16,10 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
@@ -74,5 +70,6 @@ public class AuthController {
         UserDTO createdUser = userService.createUser(userDTO);
         return ResponseEntity.ok(createdUser);
     }
+
 }
 

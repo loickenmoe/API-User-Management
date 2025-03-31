@@ -21,7 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @Tag(name = "User Management", description = "User management API")
-@SecurityRequirement(name = "bearerAuth")
+@SecurityRequirement(name = "BearerAuth") // Obligatoire pour Swagger
 public class UserController {
 
     @Autowired
