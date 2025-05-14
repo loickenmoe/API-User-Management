@@ -21,7 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @Tag(name = "User Management", description = "User management API")
-@SecurityRequirement(name = "BearerAuth") // Obligatoire pour Swagger
+@SecurityRequirement(name = "BearerAuth") // Compulsory for Swagger
 public class UserController {
 
     @Autowired
@@ -32,7 +32,7 @@ public class UserController {
      *
      * @return List of users
      */
-    @GetMapping
+    @GetMapping("/all")
     @Operation(summary = "Get all users", description = "Returns a list of all users")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<UserDTO> users = userService.getAllUsers();
@@ -59,7 +59,7 @@ public class UserController {
      * @param userDTO User details
      * @return Updated user
      */
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     @Operation(summary = "Update a user", description = "Updates a user's information")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @Valid @RequestBody UserDTO userDTO) {
         UserDTO updatedUser = userService.updateUser(id, userDTO);
@@ -72,7 +72,7 @@ public class UserController {
      * @param id User ID
      * @return No content response
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     @Operation(summary = "Delete a user", description = "Deletes a user by their ID")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
